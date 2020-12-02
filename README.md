@@ -8,8 +8,18 @@ G-Star 2020 전시, 교내 프로젝트 경진대회 전시, GGC(Global Game Cha
   
 **담당자 / 담당 업무 :** 이재성 / 클라이언트 프로그래머  
 
-# ScreenShots
+# 게임 소개
+**[소개영상](https://youtu.be/uYQ6JCqk054)**
 
+OverDepth는 최대 2인 협동 가능한 3D 액션 멀티 게임입니다.  
+Soul like를 표방하고 있으며, fromsoftware사의 다크소울과 블러드본에 영향을 많이 받았습니다.
+
+2인이 서로 매칭이되어 세션형식으로 진행됩니다.
+플레이어는 동료와 협동하여 몬스터를 처치하고 마지막 보스를 쓰러뜨려야 합니다.  
+
+<img src="https://user-images.githubusercontent.com/48229283/100824961-69d35e80-349a-11eb-9fb0-51db0885c2c0.png" width="500" height="300">
+<img src="https://user-images.githubusercontent.com/48229283/100824385-67243980-3499-11eb-97d3-6fbefdb62e7b.png" width="500" height="300">
+<img src="https://user-images.githubusercontent.com/48229283/100824625-e0239100-3499-11eb-856a-77b6e164663a.png" width="500" height="300">
 
 # 기능  
 * 몬스터 AI  
@@ -23,7 +33,7 @@ G-Star 2020 전시, 교내 프로젝트 경진대회 전시, GGC(Global Game Cha
 몬스터 상태머신의 기초가 되는 클래스입니다.
 ### 상태머신 정의
 부모 클래스에서 함수의 원형을 정의하고 자식 클래스에서 상속받아 재정의합니다.
-```swift
+```cs
   // 대기 상태
   protected virtual void Idle_state()
   {
@@ -89,7 +99,7 @@ G-Star 2020 전시, 교내 프로젝트 경진대회 전시, GGC(Global Game Cha
   
 ### Animator Blendtree 파라미터 업데이트
 애니메이터 Blendtree에 사용되는 Forward와 Right 파라미터에 현재 '움직임'에 따른 값을 할당합니다.
-```swift
+```cs
   // 무브 파라미터 업데이트
   protected virtual void UpdateMoveValue()
   {
