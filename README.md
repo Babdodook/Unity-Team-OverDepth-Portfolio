@@ -162,3 +162,64 @@ Soul like를 표방하고 있으며, fromsoftware사의 다크소울과 블러�
   
 ### 스택을 이용한 몬스터 행동 패턴 정의
 '이동 스택'과 '공격 스택'에 정의된 패턴을 Push하고 Pop하여 사용합니다.
+
+```cs
+  // 움직임 세팅
+  void SetMovement()
+  {
+      if(!isMoving)
+      {
+          int RandomAction = UnityEngine.Random.Range(0, 100);
+
+          // 공격 가능일때, 전력질주 사용
+          if (Time.time - prevTime >= RandomActionTime)
+          {
+              float RandomTime = UnityEngine.Random.Range(3.0f, 4.0f);
+              st_MoveAction.Push(new MoveAction(FanaticBattleType.FastRun, RandomTime));
+          }
+          // 공격 딜레이중, 전력질주 사용 불가
+          else
+          {
+              // 타겟이 가까이 있으면 옆으로만 걷기
+              if (TargetDistance <= 3f)
+              {
+                  // 오른쪽 걷기
+                  if (RandomAction >= 50)
+                  {
+                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
+                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_right, RandomTime));
+                  }
+                  // 왼쪽 걷기
+                  else
+                  {
+                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
+                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_left, RandomTime));
+                  }
+              }
+              else
+              {
+                  // 오른쪽 걷기
+                  if (RandomAction >= 90)
+                  {
+                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
+                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_right, RandomTime));
+                  }
+                  // 왼쪽 걷기
+                  else if (RandomAction >= 80)
+                  {
+                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
+                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_left, RandomTime));
+                  }
+                  // 앞으로 걷기
+                  else
+                  {
+                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
+                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_forward, RandomTime));
+                  }
+              }
+          }
+
+          isMoving = true;
+      }
+  }
+```
