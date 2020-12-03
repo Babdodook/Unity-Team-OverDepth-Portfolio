@@ -167,7 +167,10 @@ Soul like를 표방하고 있으며, fromsoftware사의 다크소울과 블러�
           m_moveType = type;
   }
 ```
-  
+
+## FanaticController - 몬스터 자식 클래스
+실제 몬스터의 행동을 수행하는 클래스입니다.
+
 ### 스택을 이용한 몬스터 행동 패턴 정의
 '이동 스택'과 '공격 스택'에 정의된 패턴을 Push하고 Pop하여 사용합니다.
 
