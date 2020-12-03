@@ -19,7 +19,7 @@ Soul like를 표방하고 있으며, fromsoftware사의 다크소울과 블러�
 
 ![어인](https://user-images.githubusercontent.com/48229283/100824961-69d35e80-349a-11eb-9fb0-51db0885c2c0.png) | ![광신도](https://user-images.githubusercontent.com/48229283/100824385-67243980-3499-11eb-97d3-6fbefdb62e7b.png)
 :-------------------------:|:-------------------------:
-![히드라1](https://user-images.githubusercontent.com/48229283/100824625-e0239100-3499-11eb-856a-77b6e164663a.png) | ![히드라2](https://user-images.githubusercontent.com/48229283/100951907-d873f300-3552-11eb-953a-5760bd8dad49.png)
+![히드라1](https://user-images.githubusercontent.com/48229283/100952147-4e785a00-3553-11eb-821f-103956c7f84a.png) | ![히드라2](https://user-images.githubusercontent.com/48229283/100824625-e0239100-3499-11eb-856a-77b6e164663a.png)
 
 # 기능  
 * 몬스터 AI  
