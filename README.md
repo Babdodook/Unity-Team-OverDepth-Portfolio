@@ -30,7 +30,7 @@ Soul like를 표방하고 있으며, fromsoftware사의 다크소울과 블러�
 # 몬스터 AI
 총 5마리의 몬스터가 구성되어 있습니다.  
 몬스터의 상태머신을 정의하는 부모 클래스를 작성하고, 각 몬스터 자식 클래스에서 상속을 받아 재정의합니다.
-<img src="https://user-images.githubusercontent.com/48229283/100842794-b465d280-34bc-11eb-9973-9e2ebf00d46b.PNG" width="600" height="300">
+![몬스터상속구조](https://user-images.githubusercontent.com/48229283/100949531-d3f90b80-354d-11eb-9fbb-55f3987331d5.PNG)
 
 ## BaseMonsterController - 몬스터 부모 클래스
 몬스터 상태머신의 기초가 되는 클래스입니다.
@@ -159,3 +159,6 @@ Soul like를 표방하고 있으며, fromsoftware사의 다크소울과 블러�
           m_moveType = type;
   }
 ```
+  
+### 스택을 이용한 몬스터 행동 패턴 정의
+'이동 스택'과 '공격 스택'에 정의된 패턴을 Push하고 Pop하여 사용합니다.
