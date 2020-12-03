@@ -17,9 +17,9 @@ Soul like를 표방하고 있으며, fromsoftware사의 다크소울과 블러�
 2인이 서로 매칭이되어 세션형식으로 진행됩니다.
 플레이어는 동료와 협동하여 몬스터를 처치하고 마지막 보스를 쓰러뜨려야 합니다.  
 
-<img src="https://user-images.githubusercontent.com/48229283/100824961-69d35e80-349a-11eb-9fb0-51db0885c2c0.png" width="500" height="300">
-<img src="https://user-images.githubusercontent.com/48229283/100824385-67243980-3499-11eb-97d3-6fbefdb62e7b.png" width="500" height="300">
-<img src="https://user-images.githubusercontent.com/48229283/100824625-e0239100-3499-11eb-856a-77b6e164663a.png" width="500" height="300">
+![어인](https://user-images.githubusercontent.com/48229283/100824961-69d35e80-349a-11eb-9fb0-51db0885c2c0.png) | ![광신도](https://user-images.githubusercontent.com/48229283/100824385-67243980-3499-11eb-97d3-6fbefdb62e7b.png)
+:-------------------------:|:-------------------------:
+![히드라1](https://user-images.githubusercontent.com/48229283/100824625-e0239100-3499-11eb-856a-77b6e164663a.png) | ![히드라2](https://user-images.githubusercontent.com/48229283/100951907-d873f300-3552-11eb-953a-5760bd8dad49.png)
 
 # 기능  
 * 몬스터 AI  
@@ -29,6 +29,8 @@ Soul like를 표방하고 있으며, fromsoftware사의 다크소울과 블러�
 
 # 몬스터 AI
 총 5마리의 몬스터가 구성되어 있습니다.  
+![어인](https://user-images.githubusercontent.com/48229283/100951644-4ec42580-3552-11eb-90a9-d69a94c2222f.jpg)
+
 몬스터의 상태머신을 정의하는 부모 클래스를 작성하고, 각 몬스터 자식 클래스에서 상속을 받아 재정의합니다.
 ![몬스터상속구조](https://user-images.githubusercontent.com/48229283/100949531-d3f90b80-354d-11eb-9fbb-55f3987331d5.PNG)
 
