@@ -24,8 +24,8 @@ Soul like를 표방하고 있으며, fromsoftware사의 다크소울과 블러�
 # 기능  
 * 몬스터 AI  
 * TCP 클라이언트  
-* 캐릭터 회전과 이동  
-* 카메라 회전과 이동  
+* 캐릭터 Movement
+* 카메라 Movement  
 
 # 몬스터 AI
 총 5마리의 몬스터가 구성되어 있습니다.  
@@ -293,5 +293,5 @@ public class MoveAction
   }
 ```
 
-# 캐릭터 회전과 이동
-# 카메라 회전과 이동
+# 캐릭터 Movement
+# 카메라 Movement
