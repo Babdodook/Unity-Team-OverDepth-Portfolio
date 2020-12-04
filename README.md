@@ -202,7 +202,7 @@ public class MoveAction
 하나의 클라이언트가 연산을 먼저 처리한 후에 서버에게 보내고, 서버는 다시 클라이언트 모두에게 패킷을 보냅니다.  
 클라이언트는 패킷을 받고나서 로직을 실행합니다.
   
-## 몬스터 이동 동기화
+## 1. 몬스터 이동 동기화
 이동 패킷을 매프레임마다 전송하지 않고, 5프레임 단위로 나눠서 전송합니다.  
 5프레임이라는 공백이 있기때문에, 이동하는 위치를 연산할때 Time.deltaTime에 5를 곱해줍니다.  
 
@@ -231,12 +231,12 @@ public class MoveAction
           try
           {
               TCPClient.m_Monster.Monster_Movement(
-                  Packing.STATE.TITANICHYDRA,
-                  index,
-                  (UInt64)TCPClient.PROTOCOL.M_MOVE,
-                  desiredPosition,
-                  m_desiredMoveType,
-                  speed);
+                  Packing.STATE.TITANICHYDRA,         // 몬스터 타입
+                  index,                              // 몬스터 id
+                  (UInt64)TCPClient.PROTOCOL.M_MOVE,  // 프로토콜
+                  desiredPosition,                    // 이동 예상 위치
+                  m_desiredMoveType,                  // 이동시 움직임
+                  speed);                             // 이동 속도
 
               TCP_isConnected = true;
 
@@ -263,6 +263,53 @@ public class MoveAction
       
       // 해당 위치로 이동
       CC.Move(moveDirection * (m_desiredSpeed) * Time.deltaTime);
+  }
+```
+
+## 2. 몬스터 애니메이션 동기화
+애니메이션 패킷은 이동 패킷과 달리 한번만 보내도록 하였습니다.
+애니메이션 번호를 서버에게 보내고 클라이언트에서 받은 번호(int)를 enum으로 캐스팅하여 사용합니다.
+
+```cs
+// 서버에게 애니메이션 보내기
+  public bool TCP_SendAnimation(int anim)
+  {
+      // 서버와 연결되어 있지 않다면, false 리턴
+      if (!TCP_isConnected)
+          return false;
+      
+      // 한번만 보내기
+      if (Animation_FrameCheck == Animation_FrameDelay)
+      {
+          Animation_FrameCheck = -1;
+          
+          // 애니메이션 보내기
+          try
+          {
+              TCPClient.m_Monster.Monster_Animation(
+                  Packing.STATE.TITANICHYDRA,           // 몬스터 타입
+                  index,                                // 몬스터 id
+                  (UInt64)TCPClient.PROTOCOL.M_ATTACK,  // 프로토콜
+                  transform.position,                   // 현재 위치
+                  transform.rotation,                   // 현재 회전값
+                  v,                                    // vertical
+                  h,                                    // horizontal
+                  anim);                                // 애니메이션 번호
+
+              TCP_isConnected = true;
+              return true;
+          }
+          // 서버와 연결되어 있지 않다면 false 리턴
+          catch
+          {
+              print("Monster_Animation / No connection found with Server");
+
+              TCP_isConnected = false;
+              return false;
+          }
+      }
+
+      return true;
   }
 ```
 
