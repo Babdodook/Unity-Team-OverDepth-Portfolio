@@ -294,6 +294,58 @@ public class MoveAction
 ```
 
 # 캐릭터 Movement
+캐릭터는 카메라의 정면 벡터를 기준으로 움직입니다.
+![캐릭터 움직임1](https://user-images.githubusercontent.com/48229283/101126577-2534f800-363f-11eb-86ff-4e717aa97c45.PNG)
 
+```cs
+void UpdateMovement()
+{
+  vertical = Input.GetAxis("Vertical");       // 수직 이동값 z값
+  horizontal = Input.GetAxis("Horizontal");   // 수평 이동값 x값
+  
+  // 카메라 정면과 플레이어의 정면 방향을 구한다
+  // normalized를 이용해서 방향값만 구한다.
+  // 월드 좌표 기준
+  m_CamForward = Vector3.Scale(Cam.forward, new Vector3(1, 0, 1)).normalized;           // 카메라가 바라보는 방향에서 y값을 제외한 방향을 구해온다.
+  m_PlayerForward = Vector3.Scale(transform.forward, new Vector3(1, 0, 1)).normalized;  // 캐릭터가 바라보는 방향에서 y값을 제외한 방향을 구해온다.
+
+  // vertical(양수이면 전방, 음수이면 후방)*카메라 전방(월드좌표 기준) + horizontal(양수이면 우측, 음수이면 좌측) * 카메라 우측(월드좌표 기준)
+  m_desiredMoveDirection = vertical * m_CamForward + horizontal * Cam.right; // 원하는 방향(가려는 방향) 
+  
+  // 대각선 무브 값 정규화
+  // 가령 W와 S를 동시에 입력시 무브값이 가중되어 곱해짐.
+  if (m_desiredMoveDirection.magnitude > 1f)  // 가중된 값을 받아 1f값을 넘기게되면 실행
+      m_desiredMoveDirection.Normalize();     // 노멀라이즈화시켜 값을 1로 바꾼다.(방향 값만 가지고 오는것)
+  
+  // 캐릭터 컨트롤러를 이용한 움직임
+  // m_desiredMoveDirection으로 이동한다.
+  CC.Move(m_desiredMoveDirection * moveSpeed * Time.deltaTime);
+}
+
+```
 
 # 카메라 Movement
+![카메라 계층구조2](https://user-images.githubusercontent.com/48229283/101127532-1cddbc80-3641-11eb-8e91-7ab361101a2e.PNG) | ![카메라 계층구조](https://user-images.githubusercontent.com/48229283/101127544-26672480-3641-11eb-8e0f-4d2da5fe8fca.PNG)
+:-------------------------:|:-------------------------:
+
+캐릭터를 따라다니는 '카메라 리그'가 있고  
+'카메라 리그'의 자식으로 '카메라 피봇'이 있습니다.  
+'카메라 피봇'은 마우스 X, Y값을 받아서 회전합니다.  
+'메인카메라'는 '카메라 피봇'의 자식으로 있어 '카메라 피봇'이 회전하게되면 '메인카메라'도 같이 회전하게 됩니다.  
+
+# 그 외
+## 맡은 역할
+클라이언트 프로그래머 포지션으로
+몬스터 AI와 서버간 동기화 작업을 하였습니다.
+개발 초기에는 캐릭터와 카메라 클래스의 프레임워크 작업을 하였습니다.
+
+## 프로젝트를 진행하며 어려웠던 점
+작업의 어려움보다는 팀원간의 커뮤니케이션, 협업을 함에 있어서 어려움을 겪었습니다.
+다른 팀원이 한 작업물의 퀄리티가 마음에 들지 않는 것.
+일정이 계속 밀리는 것. 등으로 인한 점이 어려웠습니다.
+
+## 개선된 점
+부족한 부분이 있다면 해당 팀원과 그리고 기획자와 회의를 거쳐 부족한 부분을 피드백하고 개선했습니다.
+변동되는 일정에 맞추어서 작업속도를 조절하였습니다.
+
+프로젝트를 진행하며 프로그래밍 능력도 발전하였지만, 팀원을 대하는 태도와 커뮤니케이션 능력도 발전하였습니다.
