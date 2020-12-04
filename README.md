@@ -207,7 +207,7 @@ public class MoveAction
 5프레임이라는 공백이 있기때문에, 이동하는 위치를 연산할때 Time.deltaTime에 5를 곱해줍니다.  
 
 ```cs
-// 이동할 위치, 회전값 보내기
+// 서버에게 이동할 위치, 회전값 보내기
   public bool TCP_SendMovement(float speed)
   {
       // 서버와 연결되어 있지 않다면, false 리턴
@@ -253,21 +253,10 @@ public class MoveAction
 
       return true;
   }
-  
-// 포지션, 로테이션 업데이트
-  protected void RecvUpdateTransform()
-  {
-      // 받은 포지션으로 방향 계산하기
-      Vector3 moveDirection = m_desiredPosition - transform.position;
-      moveDirection = Vector3.Scale(moveDirection, new Vector3(1, 0, 1)).normalized;
-      
-      // 해당 위치로 이동
-      CC.Move(moveDirection * (m_desiredSpeed) * Time.deltaTime);
-  }
 ```
 
 ## 2. 몬스터 애니메이션 동기화
-애니메이션 패킷은 이동 패킷과 달리 한번만 보내도록 하였습니다.
+애니메이션 패킷은 이동 패킷과 달리 한번만 보내도록 하였습니다.  
 애니메이션 번호를 서버에게 보내고 클라이언트에서 받은 번호(int)를 enum으로 캐스팅하여 사용합니다.
 
 ```cs
