@@ -184,15 +184,6 @@ public class MoveAction
       m_Animator.SetFloat("Forward", v);
       m_Animator.SetFloat("Right", h);
   }
-
-  // m_moveType 변경
-  public void SetMoveType(MoveType type)
-  {
-      if (TCP_isConnected)
-          m_desiredMoveType = type;
-      else
-          m_moveType = type;
-  }
 ```
 
 # TCP 클라이언트
