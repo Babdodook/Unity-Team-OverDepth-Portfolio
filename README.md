@@ -37,74 +37,98 @@ Soul like를 표방하고 있으며, fromsoftware사의 다크소울과 블러�
 몬스터의 상태머신을 정의하는 부모 클래스를 작성하고, 각 몬스터 자식 클래스에서 상속을 받아 재정의합니다.
 ![몬스터상속구조](https://user-images.githubusercontent.com/48229283/100949531-d3f90b80-354d-11eb-9fbb-55f3987331d5.PNG)
 
-## BaseMonsterController - 몬스터 부모 클래스
-몬스터 상태머신의 기초가 되는 클래스입니다.
-### 상태머신 정의
-부모 클래스에서 함수의 원형을 정의하고 자식 클래스에서 상속받아 재정의합니다.
+### 스택을 이용한 몬스터 행동 패턴 정의
+'이동 스택'과 '공격 스택'에 정의된 패턴을 Push하고 Pop하여 사용합니다.
+
+이동 스택 | 공격 스택
+:-------------------------:|:-------------------------:
+![스택움직임](https://user-images.githubusercontent.com/48229283/100953436-ee36e780-3555-11eb-8dc2-0065696b1698.PNG) | ![스택공격](https://user-images.githubusercontent.com/48229283/100966903-58a95100-3571-11eb-9dc2-31ac2e399d11.PNG)
+
+#### MoveAction 클래스
+몬스터의 움직임(걷기, 뛰기 등)과 실행될 시간을 멤버변수로 가지고 있습니다.
+
 ```cs
-  // 대기 상태
-  protected virtual void Idle_state()
+// 움직임을 지정하고 해당 움직임이 몇초 동안 지속될 것인지 결정
+public class MoveAction
+{
+    public FanaticBattleType Action;    // 움직임
+    public float Time;                  // 움직임이 실행될 시간
+
+    public MoveAction(FanaticBattleType _Action, float _Time)
+    {
+        Action = _Action;
+        Time = _Time;
+    }
+}
+
+// MoveAction 스택 선언
+[HideInInspector] public Stack<MoveAction> st_MoveAction;
+```
+
+#### 스택에 행동 할당
+스택에 확률과 특정 조건에따라서 움직임과 시간을 Push합니다.
+
+```cs
+  // 움직임 세팅
+  void SetMovement()
   {
-  }
-
-  // 추적 상태
-  protected virtual void Trace_state()
-  {
-  }
-
-  // 공격 거리 감지하기
-  // 사정거리안에 들어오면 공격 실행
-  protected virtual void CheckAttackDistance()
-  {
-  }
-
-  // 전투 상태
-  protected virtual void Battle_state()
-  {
-  }
-
-  // 피격 상태
-  protected virtual void OnHit_state()
-  {
-
-  }
-
-  // 죽음 상태
-  protected virtual void Death_state()
-  {
-
-  }
-
-  // 상태 변경 코루틴
-  protected virtual IEnumerator ChangeState()
-  {
-      while (true)
+      if(!isMoving)
       {
-          // m_nowState에 따라 상태 변경
-          switch (m_nowState)
+          int RandomAction = UnityEngine.Random.Range(0, 100);
+
+          // 공격 가능일때, 전력질주 사용
+          if (Time.time - prevTime >= RandomActionTime)
           {
-              case MONSTER_STATE.ONHIT:
-                  OnHit_state();
-                  break;
-              case MONSTER_STATE.DEATH:
-                  Death_state();
-                  yield break;        // 죽은 경우 코루틴 종료
-              case MONSTER_STATE.IDLE:
-                  Idle_state();
-                  break;
-              case MONSTER_STATE.TRACE:
-                  Trace_state();
-                  break;
-              case MONSTER_STATE.BATTLE:
-                  Battle_state();
-                  break;
+              float RandomTime = UnityEngine.Random.Range(3.0f, 4.0f);
+              st_MoveAction.Push(new MoveAction(FanaticBattleType.FastRun, RandomTime));
+          }
+          // 공격 딜레이중, 전력질주 사용 불가
+          else
+          {
+              // 타겟이 가까이 있으면 옆으로만 걷기
+              if (TargetDistance <= 3f)
+              {
+                  // 오른쪽 걷기
+                  if (RandomAction >= 50)
+                  {
+                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
+                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_right, RandomTime));
+                  }
+                  // 왼쪽 걷기
+                  else
+                  {
+                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
+                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_left, RandomTime));
+                  }
+              }
+              else
+              {
+                  // 오른쪽 걷기
+                  if (RandomAction >= 90)
+                  {
+                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
+                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_right, RandomTime));
+                  }
+                  // 왼쪽 걷기
+                  else if (RandomAction >= 80)
+                  {
+                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
+                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_left, RandomTime));
+                  }
+                  // 앞으로 걷기
+                  else
+                  {
+                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
+                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_forward, RandomTime));
+                  }
+              }
           }
 
-          yield return null;
+          isMoving = true;
       }
   }
 ```
-  
+
 ### Animator Blendtree 파라미터 업데이트
 애니메이터 Blendtree에 사용되는 Forward와 Right 파라미터에 현재 '움직임'에 따른 값을 할당합니다.
 
@@ -168,83 +192,76 @@ Soul like를 표방하고 있으며, fromsoftware사의 다크소울과 블러�
   }
 ```
 
-## FanaticController - 몬스터 자식 클래스
-실제 몬스터의 행동을 수행하는 클래스입니다.
-
-### 스택을 이용한 몬스터 행동 패턴 정의
-'이동 스택'과 '공격 스택'에 정의된 패턴을 Push하고 Pop하여 사용합니다.
-
-이동 스택 | 공격 스택
-:-------------------------:|:-------------------------:
-![스택움직임](https://user-images.githubusercontent.com/48229283/100953436-ee36e780-3555-11eb-8dc2-0065696b1698.PNG) | ![스택공격](https://user-images.githubusercontent.com/48229283/100966903-58a95100-3571-11eb-9dc2-31ac2e399d11.PNG)
-
-```cs
-  // 움직임 세팅
-  void SetMovement()
-  {
-      if(!isMoving)
-      {
-          int RandomAction = UnityEngine.Random.Range(0, 100);
-
-          // 공격 가능일때, 전력질주 사용
-          if (Time.time - prevTime >= RandomActionTime)
-          {
-              float RandomTime = UnityEngine.Random.Range(3.0f, 4.0f);
-              st_MoveAction.Push(new MoveAction(FanaticBattleType.FastRun, RandomTime));
-          }
-          // 공격 딜레이중, 전력질주 사용 불가
-          else
-          {
-              // 타겟이 가까이 있으면 옆으로만 걷기
-              if (TargetDistance <= 3f)
-              {
-                  // 오른쪽 걷기
-                  if (RandomAction >= 50)
-                  {
-                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
-                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_right, RandomTime));
-                  }
-                  // 왼쪽 걷기
-                  else
-                  {
-                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
-                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_left, RandomTime));
-                  }
-              }
-              else
-              {
-                  // 오른쪽 걷기
-                  if (RandomAction >= 90)
-                  {
-                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
-                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_right, RandomTime));
-                  }
-                  // 왼쪽 걷기
-                  else if (RandomAction >= 80)
-                  {
-                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
-                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_left, RandomTime));
-                  }
-                  // 앞으로 걷기
-                  else
-                  {
-                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
-                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_forward, RandomTime));
-                  }
-              }
-          }
-
-          isMoving = true;
-      }
-  }
-```
-
 # TCP 클라이언트
 클라이언트에서 서버에게 패킷을 보내고, 서버로부터 받은 패킷을 처리하여 동기화하는 부분을 작업하였습니다.
   
-![서버](https://user-images.githubusercontent.com/48229283/101117733-0462a780-362b-11eb-887e-53df0792a2cc.PNG)
-하나의 클라이언트가 연산을 먼저 처리한 후에 서버에게 보내고, 서버는 다시 클라이언트 모두에게 패킷을 보냅니다.
+![서버](https://user-images.githubusercontent.com/48229283/101117733-0462a780-362b-11eb-887e-53df0792a2cc.PNG)  
+하나의 클라이언트가 연산을 먼저 처리한 후에 서버에게 보내고, 서버는 다시 클라이언트 모두에게 패킷을 보냅니다.  
 클라이언트는 패킷을 받고나서 로직을 실행합니다.
+  
+### 몬스터 이동 동기화
+이동 패킷을 매프레임마다 전송하지 않고, 5프레임 단위로 나눠서 전송합니다.  
+5프레임이라는 공백이 있기때문에, 이동하는 위치를 연산할때 Time.deltaTime에 5를 곱해줍니다.  
+
+```cs
+// 이동할 위치, 회전값 보내기
+  public bool TCP_SendMovement(float speed)
+  {
+      // 서버와 연결되어 있지 않다면, false 리턴
+      if (!TCP_isConnected)
+          return false;
+
+      // 5프레임 단위로 서버에게 이동할 위치 전송
+      ++FrameCheck;
+      
+      // 5프레임 되었을시,
+      if (FrameCheck > 5)
+      {
+          FrameCheck = -1;
+          
+          // 몬스터가 이동해야할 예상 position 계산
+          // 현재 포지션 + 이동할 방향 * 이동 속도 * 델타타임 * 5
+          // 5를 곱하는 이유는 5프레임이라는 공백이 있기 때문.
+          Vector3 desiredPosition = transform.position + (m_desiredMoveDirection) * speed * Time.deltaTime * 5);
+          
+          // 일단 서버에게 패킷전송
+          try
+          {
+              TCPClient.m_Monster.Monster_Movement(
+                  Packing.STATE.TITANICHYDRA,
+                  index,
+                  (UInt64)TCPClient.PROTOCOL.M_MOVE,
+                  desiredPosition,
+                  m_desiredMoveType,
+                  speed);
+
+              TCP_isConnected = true;
+
+              return true;
+          }
+          // 서버와 연결되어 있지 않다면 false 리턴
+          catch
+          {
+              print("Monster_Movement / No connection found with Server");
+              TCP_isConnected = false;
+              return false;
+          }
+      }
+
+      return true;
+  }
+  
+// 포지션, 로테이션 업데이트
+  protected void RecvUpdateTransform()
+  {
+      // 받은 포지션으로 방향 계산하기
+      Vector3 moveDirection = m_desiredPosition - transform.position;
+      moveDirection = Vector3.Scale(moveDirection, new Vector3(1, 0, 1)).normalized;
+      
+      // 해당 위치로 이동
+      CC.Move(moveDirection * (m_desiredSpeed) * Time.deltaTime);
+  }
+```
 
 # 캐릭터 회전과 이동
 # 카메라 회전과 이동
