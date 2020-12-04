@@ -37,14 +37,16 @@ Soul like를 표방하고 있으며, fromsoftware사의 다크소울과 블러�
 몬스터의 상태머신을 정의하는 부모 클래스를 작성하고, 각 몬스터 자식 클래스에서 상속을 받아 재정의합니다.
 ![몬스터상속구조](https://user-images.githubusercontent.com/48229283/100949531-d3f90b80-354d-11eb-9fbb-55f3987331d5.PNG)
 
-### 스택을 이용한 몬스터 행동 패턴 정의
+---
+
+### 1. 스택을 이용한 몬스터 행동 패턴 정의
 '이동 스택'과 '공격 스택'에 정의된 패턴을 Push하고 Pop하여 사용합니다.
 
 이동 스택 | 공격 스택
 :-------------------------:|:-------------------------:
 ![스택움직임](https://user-images.githubusercontent.com/48229283/100953436-ee36e780-3555-11eb-8dc2-0065696b1698.PNG) | ![스택공격](https://user-images.githubusercontent.com/48229283/100966903-58a95100-3571-11eb-9dc2-31ac2e399d11.PNG)
 
-#### MoveAction 클래스
+#### 1-1. MoveAction 클래스
 몬스터의 움직임(걷기, 뛰기 등)과 실행될 시간을 멤버변수로 가지고 있습니다.
 
 ```cs
@@ -65,7 +67,7 @@ public class MoveAction
 [HideInInspector] public Stack<MoveAction> st_MoveAction;
 ```
 
-#### 스택에 행동 할당
+#### 1-2. 스택에 행동 할당
 스택에 확률과 특정 조건에따라서 움직임과 시간을 Push합니다.
 
 ```cs
