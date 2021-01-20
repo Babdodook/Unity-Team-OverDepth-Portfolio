@@ -634,6 +634,131 @@ public class BaseMonsterController : MonoBehaviour
   }
 ```
 
+## 3. 패킷 Recv
+
+서버로부터 온 패킷을 받아서 몬스터에게 적용하는 부분입니다.  
+
+```cs
+// 서버로부터 위치, 회전값, 속도 받음
+    public void TCP_RecvTransform(Vector3 _position, Quaternion _rotation, float _speed)
+    {
+        m_desiredPosition = _position;
+        m_desiredRotation = _rotation;
+        m_desiredSpeed = _speed;
+    }
+
+    // 서버로부터 위치, 회전값 받음
+    public void TCP_RecvTransform(Vector3 _position, Quaternion _rotation)
+    {
+        m_desiredPosition = _position;
+        m_desiredRotation = _rotation;
+    }
+
+    // vertical, horizontal 값 받음
+    public void TCP_RecvMoveValue(float forward, float right)
+    {
+        m_desiredV = forward;
+        m_desiredH = right;
+    }
+
+    // 속도값 받음
+    public void TCP_RecvSpeed(float speed)
+    {
+        m_desiredSpeed = speed;
+    }
+
+    // 포지션, 로테이션 업데이트
+    protected void RecvUpdateTransform()
+    {
+        Vector3 moveDirection = m_desiredPosition - transform.position;
+        moveDirection = Vector3.Scale(moveDirection, new Vector3(1, 0, 1)).normalized;
+
+        CC.Move(moveDirection * (m_desiredSpeed) * Time.deltaTime);
+    }
+
+    // vertical, horizontal 업데이트
+    protected void RecvUpdateMoveValue()
+    {
+        if (m_isAttack)
+        {
+            m_desiredV = m_desiredH = 0;
+        }
+
+        recv_v = Mathf.Lerp(recv_v, m_desiredV, 2 * Time.deltaTime);
+        recv_h = Mathf.Lerp(recv_h, m_desiredH, 2 * Time.deltaTime);
+
+        m_Animator.SetFloat("Forward", recv_v);
+        m_Animator.SetFloat("Right", recv_h);
+    }
+
+    // 서버로부터 받은 moveType으로 변경
+    public void TCP_RecvMoveType(int _moveType)
+    {
+        m_moveType = (MoveType)_moveType;
+    }
+
+    // m_moveType 변경
+    public void SetMoveType(MoveType type)
+    {
+        if (TCP_isConnected)
+            m_desiredMoveType = type;
+        else
+            m_moveType = type;
+    }
+
+    // Other 플레이어가 꺼져있다면. 클라이언트 플레이어로 타겟 변경
+    protected void CheckOtherPlayerExist(Packing.STATE monsterType)
+    {
+        // 타겟 지정된 플레이어 나가면 다른 플레이어로 타겟 변경
+        if (Target != null)
+        {
+            if (!GameManager.Instance.OtherPlayer.gameObject.activeSelf)
+            {
+                Target = GameManager.Instance.ClientPlayer;
+                return;
+            }
+
+            // 클라이언트 넘버가 1일때, 타겟 플레이어가 죽으면 다른 플레이어로 타겟 변경 패킷 보내기
+            if (TCP_isConnected && Static_Data.m_number == 1)
+            {
+                if (Target.GetComponentInChildren<PlayerAnimControl>().isDie)
+                {
+                    if (Target == GameManager.Instance.ClientPlayer)
+                    {
+                        Target = GameManager.Instance.OtherPlayer;
+                    }
+                    else
+                        Target = GameManager.Instance.ClientPlayer;
+
+                    try
+                    {
+                        int classNumber;
+                        if (Target == GameManager.Instance.ClientPlayer)
+                        {
+                            classNumber = 1;
+                        }
+                        else
+                            classNumber = 2;
+
+                        TCPClient.m_Monster.Monster_SetTarget(
+                            monsterType,
+                            index,
+                            (UInt64)TCPClient.PROTOCOL.M_SET_TARGET,
+                            m_nowState,
+                            classNumber);
+
+                        TCP_isConnected = true;
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
+        }
+    }// End CheckOtherPlayerExist
+```
+
 # 캐릭터 Movement
 캐릭터는 카메라의 정면 벡터를 기준으로 움직입니다.
 ![캐릭터 움직임1](https://user-images.githubusercontent.com/48229283/101126577-2534f800-363f-11eb-86ff-4e717aa97c45.PNG)
