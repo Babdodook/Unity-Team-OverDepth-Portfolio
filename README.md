@@ -28,14 +28,14 @@
 ![어인](https://user-images.githubusercontent.com/48229283/100824961-69d35e80-349a-11eb-9fb0-51db0885c2c0.png) | ![광신도](https://user-images.githubusercontent.com/48229283/100824385-67243980-3499-11eb-97d3-6fbefdb62e7b.png)
 :-------------------------:|:-------------------------:
 ![히드라1](https://user-images.githubusercontent.com/48229283/100952147-4e785a00-3553-11eb-821f-103956c7f84a.png) | ![히드라2](https://user-images.githubusercontent.com/48229283/100824625-e0239100-3499-11eb-856a-77b6e164663a.png)
-
+  
 # 구현 내용
-* 몬스터 AI  
-* TCP 클라이언트  
+* [몬스터 AI](https://github.com/Babdodook/Unity-Team-OverDepth-Portfolio/blob/main/README.md#몬스터-AI)
+* [TCP 클라이언트](https://github.com/Babdodook/Unity-Team-OverDepth-Portfolio/blob/main/README.md#TCP-클라이언트)
   
-# 몬스터 AI
+## 몬스터 AI
   
-## 몬스터 종류
+### 몬스터 종류
   
 * 총 5개의 몬스터로 구성
   
@@ -45,18 +45,17 @@
 느릿한 움직임, 느린 공격 속도 | 저돌적이며, 빠른 공격 속도 | 묵직한 한방, 느린 공격 속도 | 총을 이용한 원거리 공격과 다소 빠른 근접 공격 | 3페이즈로 구성된 공격 패턴, 페이즈가 지날 수록 저돌적인 공격 스타일
   
   
-## 클래스 상속도
+### 클래스 상속도
   
 * 몬스터의 상태머신을 정의하는 부모 클래스를 작성
 * 각 몬스터 자식 클래스에서 상속을 받아 재정의
   
 ![몬스터상속구조](https://user-images.githubusercontent.com/48229283/100949531-d3f90b80-354d-11eb-9fbb-55f3987331d5.PNG)
-
----
-
+  
+  
 ## 1. 스택을 이용한 몬스터 행동 패턴 정의
 '이동 스택'과 '공격 스택'에 정의된 패턴을 Push하고 Pop하여 사용합니다.
-
+  
 이동 스택 | 공격 스택
 :-------------------------:|:-------------------------:
 ![스택움직임](https://user-images.githubusercontent.com/48229283/100953436-ee36e780-3555-11eb-8dc2-0065696b1698.PNG) | ![스택공격](https://user-images.githubusercontent.com/48229283/100966903-58a95100-3571-11eb-9dc2-31ac2e399d11.PNG)
@@ -773,302 +772,7 @@ public class BaseMonsterController : MonoBehaviour
     }// End CheckOtherPlayerExist
 ```
 
-# 캐릭터 Movement
-캐릭터는 카메라의 정면 벡터를 기준으로 움직입니다.
-![캐릭터 움직임1](https://user-images.githubusercontent.com/48229283/101126577-2534f800-363f-11eb-86ff-4e717aa97c45.PNG)
-
-```cs
-void UpdateMovement()
-{
-  vertical = Input.GetAxis("Vertical");       // 수직 이동값 z값
-  horizontal = Input.GetAxis("Horizontal");   // 수평 이동값 x값
-  
-  // 카메라 정면과 플레이어의 정면 방향을 구한다
-  // normalized를 이용해서 방향값만 구한다.
-  // 월드 좌표 기준
-  m_CamForward = Vector3.Scale(Cam.forward, new Vector3(1, 0, 1)).normalized;           // 카메라가 바라보는 방향에서 y값을 제외한 방향을 구해온다.
-  m_PlayerForward = Vector3.Scale(transform.forward, new Vector3(1, 0, 1)).normalized;  // 캐릭터가 바라보는 방향에서 y값을 제외한 방향을 구해온다.
-
-  // vertical(양수이면 전방, 음수이면 후방)*카메라 전방(월드좌표 기준) + horizontal(양수이면 우측, 음수이면 좌측) * 카메라 우측(월드좌표 기준)
-  m_desiredMoveDirection = vertical * m_CamForward + horizontal * Cam.right; // 원하는 방향(가려는 방향) 
-  
-  // 대각선 무브 값 정규화
-  // 가령 W와 S를 동시에 입력시 무브값이 가중되어 곱해짐.
-  if (m_desiredMoveDirection.magnitude > 1f)  // 가중된 값을 받아 1f값을 넘기게되면 실행
-      m_desiredMoveDirection.Normalize();     // 노멀라이즈화시켜 값을 1로 바꾼다.(방향 값만 가지고 오는것)
-  
-  // 캐릭터 컨트롤러를 이용한 움직임
-  // m_desiredMoveDirection으로 이동한다.
-  CC.Move(m_desiredMoveDirection * moveSpeed * Time.deltaTime);
-}
-
-```
-
-# 카메라 Movement
-![카메라 계층구조2](https://user-images.githubusercontent.com/48229283/101127532-1cddbc80-3641-11eb-8e91-7ab361101a2e.PNG) | ![카메라 계층구조](https://user-images.githubusercontent.com/48229283/101127544-26672480-3641-11eb-8e0f-4d2da5fe8fca.PNG)
-:-------------------------:|:-------------------------:
-
-캐릭터를 따라다니는 '카메라 리그'가 있고  
-'카메라 리그'의 자식으로 '카메라 피봇'이 있습니다.  
-'카메라 피봇'은 마우스 X, Y값을 받아서 회전합니다.  
-'메인카메라'는 '카메라 피봇'의 자식으로 있어 '카메라 피봇'이 회전하게되면 '메인카메라'도 같이 회전하게 됩니다.  
-
-### CameraRig.cs
-```cs
-public class CameraRig : MonoBehaviour
-{
-    [Header("플레이어 추적 속도")]
-    public float m_moveSpeed; // 움직이는 속도
-    float m_OriginSpeed;
-    float m_LowSpeed;
-    float m_HighSpeed;
-
-    [Header("추적 대상")]
-    public Transform m_target = null; // 플레이어
-    public PlayerControl PlayerController; // 플레이어 컨트롤러 스크립트
-
-    public Vector3 moveVector;
-
-    public CameraEvent sc_CEvent;
-
-    void Awake()
-    {
-        Cursor.lockState = CursorLockMode.Locked; // 마우스 중앙 고정
-        Cursor.visible = false; // 커서 숨기기
-
-        m_OriginSpeed = m_moveSpeed;
-        m_LowSpeed = m_moveSpeed - 1.5f;
-        m_HighSpeed = m_moveSpeed + 1.5f;
-        transform.position = m_target.position; // 플레이어 위치
-
-        moveVector = transform.position;
-    }
-
-    void Update()
-    {
-        if (sc_CEvent != null && sc_CEvent.isPlayEvent)
-            return;
-
-        UpdateMoveSpeed();
-        UpdatePos();
-    }
-
-    void UpdatePos()
-    {
-        moveVector.x = Mathf.Lerp(moveVector.x, m_target.position.x, 4 * Time.deltaTime);
-        moveVector.y = Mathf.Lerp(moveVector.y, m_target.position.y, 4 * Time.deltaTime);
-        moveVector.z = Mathf.Lerp(moveVector.z, m_target.position.z, 5 * Time.deltaTime);
-
-        //transform.position = moveVector;
-        transform.position = Vector3.Slerp(transform.position, moveVector, m_moveSpeed * Time.deltaTime);
-    }
-
-    void UpdateMoveSpeed()
-    {
-        if(Input.GetKey(PlayerKeyCode.Run))
-        {
-            if (Input.GetKey(PlayerKeyCode.Forward))
-                m_moveSpeed = Mathf.Lerp(m_moveSpeed, m_LowSpeed, 3f * Time.deltaTime);
-            else if (Input.GetKey(PlayerKeyCode.Backward))
-                m_moveSpeed = Mathf.Lerp(m_moveSpeed, m_HighSpeed, 3f * Time.deltaTime);
-        }
-        else
-            m_moveSpeed = Mathf.Lerp(m_moveSpeed, m_OriginSpeed, Time.deltaTime);
-
-        //print(m_moveSpeed);
-    }
-}
-```
-
-### CameraPivot.cs
-```cs
-public class CameraPivot : MonoBehaviour
-{
-    public Transform Player; // 플레이어
-    public Transform FocusPos; // 
-    public Animator Anim; // Anim 변수를 받아오기 위한 애니메이션 변수
-    public Transform CamLookPos;
-    PlayerControl PlayerController;
-
-    public CameraEvent sc_CEvent;
-
-    [Header("추적 대상 유지거리")]
-    public float m_distance;
-
-    [Header("카메라 회전 속도")]
-    public float m_rotateSpeed;
-
-    [Header("회전 보간 속도")]
-    public float m_LerpSpeed = 100f;
-
-    [Header("타겟 고정 속도")]
-    public float m_focusSpeed;
-
-    // 카메라 피봇의 포지션
-    Vector3 m_pivotPos;
-
-    // 메인카메라 위치 계산용
-    Vector3 tempCamPos;
-
-    Transform m_MainCam = null;
-    
-    SearchTarget searchTarget;
-
-    // Rotation Members
-    float m_rotateX;        // Mouse Y Value
-    float m_rotateY;        // Mouse X Value
-
-    [Header("상하 제한 각도")]
-    public float m_LimitUpValue = 80.0f;
-    public float m_LimitDownValue = -50f;
-
-    [Header("캐릭터 좌우 기준 회전 값")]
-    public float rotateValue = 0;
-
-    // Collision Members
-    [Header("충돌 거리 제한")]
-    public float m_minDistance = 0.3f;
-    public float m_maxDistance;
-
-    [Header("충돌 후 카메라 이동 속도")]
-    public float m_smoothSpeed = 10.0f;
-
-    LayerMask PlayerLayer;
-    RaycastHit hit;
-
-    [Header("충돌 지점")]
-    [SerializeField]
-    Vector3 m_CollisionCheckPos;
-
-
-    private void Awake()
-    {
-        if (m_MainCam == null)
-            m_MainCam = Camera.main.transform;
-
-        searchTarget = Player.GetComponent<SearchTarget>(); // 플레이어가 타겟팅을 했을 때 몬스터를 바라보기 위해서
-        Anim = Player.GetComponentInChildren<Animator>(); // 캐릭터에 붙어있는 애니메이션 컴포넌트 가져오기
-
-        PlayerLayer = 0 << LayerMask.NameToLayer("Player"); // 플레이어의 레이어
-
-        m_maxDistance = m_distance; // 추적 상대와의 최대 거리 설정
-
-        PlayerController = Player.GetComponent<PlayerControl>(); // 플레이어 컨트롤 스크립트
-
-
-
-
-    }
-
-    void Update()
-    {
-        if (sc_CEvent != null && sc_CEvent.isPlayEvent)
-            return;
-
-        UpdateCollision();
-        UpdateDistance();
-        UpdateRotation();
-        UpdateFocusState();
-    }
-
-    // 대상 거리 유지
-    void UpdateDistance()
-    {
-        // 현재 카메라 피봇의 뒤쪽 방향
-        tempCamPos = transform.forward * -1;
-        // 거리를 곱해주면 메인카메라가 위치해야할 벡터를 얻는다
-        
-
-        if (!side_check) // 벽에 충돌하지 않는 중
-        {
-            tempCamPos *= m_distance;
-            m_distance = m_maxDistance;
-            //Debug.Log("기본 처리 수행중");
-            // 보간을 이용해서 부드럽게 카메라 무빙이 이루어지도록 ( 카메라피봇 - 메인카메라 사이의 거리를 말하는거임, 회전 보간이 아님)
-            m_MainCam.position = Vector3.Slerp(m_MainCam.position, transform.position + tempCamPos, m_smoothSpeed * Time.deltaTime);
-        }
-        else // 벽에 충돌하는 중
-        {
-            tempCamPos *= lres;
-            //Debug.Log("사이드처리 수행중");
-            m_MainCam.position = Vector3.Slerp(m_MainCam.position, transform.position + tempCamPos, m_smoothSpeed * Time.deltaTime);
-        }
-    }
-
-    bool prevOnce = false;
-    // 카메라 회전
-    void UpdateRotation()
-    {
-        if (searchTarget.FocusState || OptionManager.Option_Active) 
-            return;      
-
-        m_rotateX = Input.GetAxis("Mouse Y") * m_rotateSpeed * -1;
-        m_rotateY = Input.GetAxis("Mouse X") * m_rotateSpeed;
-
-        if (prevOnce)   // 타겟팅 풀린 직후 카메라 위치 초기화
-        {
-            prevOnce = false;
-            transform.rotation = prevRotation;
-        }
-
-        
-        // 카메라 자동 회전
-        Vector3 lookDirection = CamLookPos.position - Camera.main.transform.position; // 캐릭터를 향한 방향(카메라가 바라봐야하는 방향)
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookDirection), 2 * Time.deltaTime);
-        
-        
-        // 카메라 상하 제한
-        float XAxisRot = transform.rotation.eulerAngles.x + m_rotateX;
-        if (XAxisRot >= 180)
-            XAxisRot -= 360;
-        XAxisRot = Mathf.Clamp(XAxisRot, m_LimitDownValue, m_LimitUpValue);
-
-        transform.rotation = Quaternion.Euler(
-            XAxisRot, 
-            transform.rotation.eulerAngles.y + m_rotateY, 
-            0);        
-    }
-
-
-    Quaternion prevRotation;
-    Quaternion toRotation;
-    Vector3 toDirection;
-    void UpdateFocusState()
-    {
-        if (!searchTarget.FocusState)
-            return;
-        
-        toDirection = searchTarget.FocusedEnemy.GetComponent<BaseMonsterController>().pivot.position;
-
-        toRotation = Quaternion.LookRotation(toDirection - FocusPos.position);
-
-        if (searchTarget.FocusedEnemy != null)
-        {
-            Transform pivot = searchTarget.FocusedEnemy.GetComponent<BaseMonsterController>().pivot;
-            Vector3 focusScreenPoint = Camera.main.WorldToScreenPoint(pivot.position);
-
-            if (Camera.main.pixelWidth / 2 - 450 >= focusScreenPoint.x ||
-                focusScreenPoint.x >= Camera.main.pixelWidth / 2 + 450 ||
-                Camera.main.pixelHeight / 2 >= focusScreenPoint.y ||
-                Camera.main.pixelHeight / 2 + 150 <= focusScreenPoint.y)
-                m_focusSpeed = Mathf.Lerp(m_focusSpeed, 4f, 4f * Time.deltaTime);
-            else
-                m_focusSpeed = Mathf.Lerp(m_focusSpeed, 2f, 4f * Time.deltaTime);
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, m_focusSpeed * Time.deltaTime);
-            transform.rotation = Quaternion.Euler(
-            transform.rotation.eulerAngles.x,
-            transform.rotation.eulerAngles.y,
-            0);
-        }
-
-        prevOnce = true;
-        prevRotation = transform.rotation;
-    }
-  }
-```
-
-# 그 외
+# 마무리
 ## 맡은 역할
 클라이언트 프로그래머 포지션으로  
 몬스터 AI와 서버간 동기화 작업을 하였습니다.  
