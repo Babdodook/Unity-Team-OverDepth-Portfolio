@@ -1,9 +1,9 @@
 # 목차
-* [개요]
-* [게임 소개]
-* [구현 내용]
-* [마무리]
-
+* [개요](https://github.com/Babdodook/Unity-Team-OverDepth-Portfolio/blob/main/README.md#개요)
+* [게임 소개](https://github.com/Babdodook/Unity-Team-OverDepth-Portfolio/blob/main/README.md#게임-소개)
+* [구현 내용](https://github.com/Babdodook/Unity-Team-OverDepth-Portfolio/blob/main/README.md#구현-내용)
+* [마무리](https://github.com/Babdodook/Unity-Team-OverDepth-Portfolio/blob/main/README.md#마무리)
+  
 # 개요
 **팀 명 :** Team OverDepth
 **게임 이름 :** OverDepth
@@ -20,7 +20,7 @@
 * 클라이언트
 * 몬스터 AI
 * TCP 동기화
-
+  
 # 게임 소개
 **[소개영상](https://youtu.be/uYQ6JCqk054)**
   
@@ -30,18 +30,20 @@
 :-------------------------:|:-------------------------:
 ![히드라1](https://user-images.githubusercontent.com/48229283/100952147-4e785a00-3553-11eb-821f-103956c7f84a.png) | ![히드라2](https://user-images.githubusercontent.com/48229283/100824625-e0239100-3499-11eb-856a-77b6e164663a.png)
 
-# 기능
+# 구현 내용
 * 몬스터 AI  
 * TCP 클라이언트  
   
-# 몬스터 AI
-총 5마리의 몬스터가 구성되어 있습니다.  
+## 몬스터 AI
+  
+* 총 5개의 몬스터로 구성
+  
 어인  | 광신도  | 광신도Mace  | 광신도Gunner  | 타이타닉 히드라
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:
 ![어인](https://user-images.githubusercontent.com/48229283/100951644-4ec42580-3552-11eb-90a9-d69a94c2222f.jpg) | ![광신도1](https://user-images.githubusercontent.com/48229283/100952361-c181d080-3553-11eb-9a45-e8d1989fafd5.jpg) | ![광신도2](https://user-images.githubusercontent.com/48229283/100952444-ec6c2480-3553-11eb-9dff-fe4e50d1aa87.jpg) | ![광신도3](https://user-images.githubusercontent.com/48229283/100952476-f2fa9c00-3553-11eb-8c78-ccf28c306d73.jpg) | ![히드라](https://user-images.githubusercontent.com/48229283/100952493-f8f07d00-3553-11eb-9d83-55406a6b7ebc.jpg)
 느릿한 움직임, 느린 공격 속도 | 저돌적이며, 빠른 공격 속도 | 묵직한 한방, 느린 공격 속도 | 총을 이용한 원거리 공격과 다소 빠른 근접 공격 | 3페이즈로 구성된 공격 패턴, 페이즈가 지날 수록 저돌적인 공격 스타일
-
-
+  
+  
 몬스터의 상태머신을 정의하는 부모 클래스를 작성하고, 각 몬스터 자식 클래스에서 상속을 받아 재정의합니다.
 ![몬스터상속구조](https://user-images.githubusercontent.com/48229283/100949531-d3f90b80-354d-11eb-9fbb-55f3987331d5.PNG)
 
