@@ -1,32 +1,39 @@
-# Unity-Team-OverDepth-Portfolio
-**팀 / 게임 명 :** Team OverDepth / OverDepth  
-**개발 기간 :** 2020.03.01 ~ 12.03 (기획 30일, 개발 247일)  
+# 목차
+* [개요]
+* [게임 소개]
+* [구현 내용]
+* [마무리]
+
+# 개요
+**팀 명 :** Team OverDepth
+**게임 이름 :** OverDepth
+**개발 기간 :** 2020.03.01 ~ 12.03  
 **개발 환경 :** Unity 2019.2.21f1 / Visual Studio 2019 / Github Desktop / Git LFS / Trello  
 **개발 인원 :** 11명  
 **요 약 :** 유니티 엔진을 활용한 최대 2인까지 협동 가능한 3D 액션 게임.  
-G-Star 2020 전시, 교내 프로젝트 경진대회 전시, GGC(Global Game Challenge 2020) 전시를 위해 개발하였습니다.  
+**수상 및 출품**
+* GGC(Global Game Challenge 2020) 챌린지 부문 금상 수상
+* G-Star 2020 출품
+* 교내 프로젝트 경진대회 최우수 수상
   
-**담당자 / 담당 업무 :** 이재성 / 클라이언트 프로그래머  
+**담당 업무 :**
+* 클라이언트
+* 몬스터 AI
+* TCP 동기화
 
 # 게임 소개
 **[소개영상](https://youtu.be/uYQ6JCqk054)**
-
-OverDepth는 최대 2인 협동 가능한 3D 액션 멀티 게임입니다.  
-Soul like를 표방하고 있으며, fromsoftware사의 다크소울과 블러드본에 영향을 많이 받았습니다.
-
-2인이 서로 매칭이되어 세션형식으로 진행됩니다.
-플레이어는 동료와 협동하여 몬스터를 처치하고 마지막 보스를 쓰러뜨려야 합니다.  
-
+  
+* 최대 2인 협동가능한 3D 액션게임
+  
 ![어인](https://user-images.githubusercontent.com/48229283/100824961-69d35e80-349a-11eb-9fb0-51db0885c2c0.png) | ![광신도](https://user-images.githubusercontent.com/48229283/100824385-67243980-3499-11eb-97d3-6fbefdb62e7b.png)
 :-------------------------:|:-------------------------:
 ![히드라1](https://user-images.githubusercontent.com/48229283/100952147-4e785a00-3553-11eb-821f-103956c7f84a.png) | ![히드라2](https://user-images.githubusercontent.com/48229283/100824625-e0239100-3499-11eb-856a-77b6e164663a.png)
 
-# 기능  
+# 기능
 * 몬스터 AI  
 * TCP 클라이언트  
-* 캐릭터 Movement
-* 카메라 Movement  
-
+  
 # 몬스터 AI
 총 5마리의 몬스터가 구성되어 있습니다.  
 어인  | 광신도  | 광신도Mace  | 광신도Gunner  | 타이타닉 히드라
