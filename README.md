@@ -11,6 +11,7 @@
 **개발 환경 :** Unity 2019.2.21f1 / Visual Studio 2019 / Github Desktop / Git LFS / Trello  
 **개발 인원 :** 11명  
 **요 약 :** 유니티 엔진을 활용한 최대 2인까지 협동 가능한 3D 액션 게임.  
+  
 **수상 및 출품**  
 * GGC(Global Game Challenge 2020) 챌린지 부문 금상 수상
 * G-Star 2020 출품
