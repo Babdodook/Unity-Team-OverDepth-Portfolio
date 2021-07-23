@@ -8,7 +8,6 @@
 **팀 명 :** Team OverDepth  
 **게임 이름 :** OverDepth  
 **개발 기간 :** 2020.03.01 ~ 12.03  
-**개발 환경 :** Unity 2019.2.21f1 / Visual Studio 2019 / Github Desktop / Git LFS / Trello  
 **개발 인원 :** 11명  
 **요 약 :** 유니티 엔진을 활용한 최대 2인까지 협동 가능한 3D 액션 게임.  
   
@@ -22,10 +21,9 @@
 * 몬스터 AI
 * TCP 동기화
   
+  
 # 게임 소개
 **[소개영상](https://youtu.be/uYQ6JCqk054)**
-  
-* 최대 2인 협동가능한 3D 액션게임
   
 ![어인](https://user-images.githubusercontent.com/48229283/100824961-69d35e80-349a-11eb-9fb0-51db0885c2c0.png) | ![광신도](https://user-images.githubusercontent.com/48229283/100824385-67243980-3499-11eb-97d3-6fbefdb62e7b.png)
 :-------------------------:|:-------------------------:
