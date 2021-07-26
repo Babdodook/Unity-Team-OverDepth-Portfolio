@@ -92,7 +92,8 @@ public class BaseMonsterController : MonoBehaviour
   
 이동 스택 | 공격 스택
 :-------------------------:|:-------------------------:
-![스택움직임](https://user-images.githubusercontent.com/48229283/100953436-ee36e780-3555-11eb-8dc2-0065696b1698.PNG) | ![스택공격](https://user-images.githubusercontent.com/48229283/100966903-58a95100-3571-11eb-9dc2-31ac2e399d11.PNG)
+![이동스택](https://user-images.githubusercontent.com/48229283/127060276-c579015f-3f0b-4d6d-9bd0-af8b1bb0a9f5.PNG) | ![공격스택](https://user-images.githubusercontent.com/48229283/127060294-e4f8138b-20a8-4588-addf-17638e9e1cc2.PNG)
+  
   
 ### MoveAction 클래스
   
