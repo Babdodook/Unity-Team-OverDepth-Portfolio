@@ -50,6 +50,7 @@
 * 몬스터의 상태머신을 정의하는 부모 클래스를 작성
 * 각 몬스터 자식 클래스에서 상속을 받아 재정의
   
+![클래스상속도](https://user-images.githubusercontent.com/48229283/127057617-f6620620-0f03-428b-b985-90361b65d2a1.PNG)
 ![몬스터상속구조](https://user-images.githubusercontent.com/48229283/100949531-d3f90b80-354d-11eb-9fbb-55f3987331d5.PNG)
   
   
