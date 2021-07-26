@@ -50,74 +50,12 @@
 * 몬스터의 상태머신을 정의하는 부모 클래스를 작성
 * 각 몬스터 자식 클래스에서 상속을 받아 재정의
   
-![클래스상속도](https://user-images.githubusercontent.com/48229283/127057617-f6620620-0f03-428b-b985-90361b65d2a1.PNG)
-![몬스터상속구조](https://user-images.githubusercontent.com/48229283/100949531-d3f90b80-354d-11eb-9fbb-55f3987331d5.PNG)
-  
-  
-### 스택을 이용한 몬스터 행동 패턴 정의
-
-* '이동 스택'과 '공격 스택'에 정의된 패턴을 Push하고 Pop하여 사용
-  
-이동 스택 | 공격 스택
-:-------------------------:|:-------------------------:
-![스택움직임](https://user-images.githubusercontent.com/48229283/100953436-ee36e780-3555-11eb-8dc2-0065696b1698.PNG) | ![스택공격](https://user-images.githubusercontent.com/48229283/100966903-58a95100-3571-11eb-9dc2-31ac2e399d11.PNG)
-
-### MoveAction 클래스
-  
-* 몬스터의 움직임(걷기, 뛰기 등)
-* 움직임이 실행될 시간
-  
-```cs
-// 움직임을 지정하고 해당 움직임이 몇초 동안 지속될 것인지 결정
-public class MoveAction
-{
-    public FanaticBattleType Action;    // 움직임
-    public float Time;                  // 움직임이 실행될 시간
-
-    public MoveAction(FanaticBattleType _Action, float _Time)
-    {
-        Action = _Action;
-        Time = _Time;
-    }
-}
-```
-
-```cs
-// MoveAction 스택
-[HideInInspector] public Stack<MoveAction> st_MoveAction;
-```
-
-### 스택에 행동 할당
-  
-* 움직임과 시간을 Push
-
-```cs
-  // 움직임 세팅
-  void SetMovement()
-  {
-      if(!isMoving)
-      {
-          ///... 코드 생략
-          
-          st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_right, RandomTime));
-          
-          ///...
-          
-          st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_left, RandomTime));
-          
-          ///...
-         
-          st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_forward, RandomTime));
-                  
-          isMoving = true;
-      }
-  }
-```
+![클래스상속도](https://user-images.githubusercontent.com/48229283/127057617-f6620620-0f03-428b-b985-90361b65d2a1.PNG)  
   
 ### 몬스터 부모 클래스
-
+  
 * FSM 작동 프레임 제공
-
+  
 ```cs
 public class BaseMonsterController : MonoBehaviour
 {
@@ -147,7 +85,67 @@ public class BaseMonsterController : MonoBehaviour
     ///...
 }
 ```
+  
+### 스택을 이용한 몬스터 행동 패턴 정의
 
+* '이동 스택'과 '공격 스택'에 정의된 패턴을 Push하고 Pop하여 사용
+  
+이동 스택 | 공격 스택
+:-------------------------:|:-------------------------:
+![스택움직임](https://user-images.githubusercontent.com/48229283/100953436-ee36e780-3555-11eb-8dc2-0065696b1698.PNG) | ![스택공격](https://user-images.githubusercontent.com/48229283/100966903-58a95100-3571-11eb-9dc2-31ac2e399d11.PNG)
+  
+### MoveAction 클래스
+  
+* 몬스터의 움직임(걷기, 뛰기 등)
+* 움직임이 실행될 시간
+  
+```cs
+// 움직임을 지정하고 해당 움직임이 몇초 동안 지속될 것인지 결정
+public class MoveAction
+{
+    public FanaticBattleType Action;    // 움직임
+    public float Time;                  // 움직임이 실행될 시간
+
+    public MoveAction(FanaticBattleType _Action, float _Time)
+    {
+        Action = _Action;
+        Time = _Time;
+    }
+}
+```
+
+```cs
+// MoveAction 스택
+[HideInInspector] public Stack<MoveAction> st_MoveAction;
+```
+  
+### 스택에 행동 할당
+  
+* 움직임과 시간을 Push
+  
+```cs
+  // 움직임 세팅
+  void SetMovement()
+  {
+      if(!isMoving)
+      {
+          ///... 코드 생략
+          
+          st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_right, RandomTime));
+          
+          ///...
+          
+          st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_left, RandomTime));
+          
+          ///...
+         
+          st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_forward, RandomTime));
+                  
+          isMoving = true;
+      }
+  }
+```
+  
 ## TCP 클라이언트
   
 * 클라이언트 -> 서버 패킷 보내기
