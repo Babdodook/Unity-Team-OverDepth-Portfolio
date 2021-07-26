@@ -53,16 +53,19 @@
 ![몬스터상속구조](https://user-images.githubusercontent.com/48229283/100949531-d3f90b80-354d-11eb-9fbb-55f3987331d5.PNG)
   
   
-## 1. 스택을 이용한 몬스터 행동 패턴 정의
-'이동 스택'과 '공격 스택'에 정의된 패턴을 Push하고 Pop하여 사용합니다.
+### 스택을 이용한 몬스터 행동 패턴 정의
+
+* '이동 스택'과 '공격 스택'에 정의된 패턴을 Push하고 Pop하여 사용
   
 이동 스택 | 공격 스택
 :-------------------------:|:-------------------------:
 ![스택움직임](https://user-images.githubusercontent.com/48229283/100953436-ee36e780-3555-11eb-8dc2-0065696b1698.PNG) | ![스택공격](https://user-images.githubusercontent.com/48229283/100966903-58a95100-3571-11eb-9dc2-31ac2e399d11.PNG)
 
-### 1-1. MoveAction 클래스
-몬스터의 움직임(걷기, 뛰기 등)과 실행될 시간을 멤버변수로 가지고 있습니다.
-
+### MoveAction 클래스
+  
+* 몬스터의 움직임(걷기, 뛰기 등)
+* 움직임이 실행될 시간
+  
 ```cs
 // 움직임을 지정하고 해당 움직임이 몇초 동안 지속될 것인지 결정
 public class MoveAction
@@ -76,13 +79,16 @@ public class MoveAction
         Time = _Time;
     }
 }
+```
 
-// MoveAction 스택 선언
+```cs
+// MoveAction 스택
 [HideInInspector] public Stack<MoveAction> st_MoveAction;
 ```
 
-### 1-2. 스택에 행동 할당
-스택에 확률과 특정 조건에따라서 움직임과 시간을 Push합니다.
+### 스택에 행동 할당
+  
+* 움직임과 시간을 Push
 
 ```cs
   // 움직임 세팅
@@ -90,461 +96,71 @@ public class MoveAction
   {
       if(!isMoving)
       {
-          int RandomAction = UnityEngine.Random.Range(0, 100);
-
-          // 공격 가능일때, 전력질주 사용
-          if (Time.time - prevTime >= RandomActionTime)
-          {
-              float RandomTime = UnityEngine.Random.Range(3.0f, 4.0f);
-              st_MoveAction.Push(new MoveAction(FanaticBattleType.FastRun, RandomTime));
-          }
-          // 공격 딜레이중, 전력질주 사용 불가
-          else
-          {
-              // 타겟이 가까이 있으면 옆으로만 걷기
-              if (TargetDistance <= 3f)
-              {
-                  // 오른쪽 걷기
-                  if (RandomAction >= 50)
-                  {
-                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
-                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_right, RandomTime));
-                  }
-                  // 왼쪽 걷기
-                  else
-                  {
-                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
-                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_left, RandomTime));
-                  }
-              }
-              else
-              {
-                  // 오른쪽 걷기
-                  if (RandomAction >= 90)
-                  {
-                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
-                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_right, RandomTime));
-                  }
-                  // 왼쪽 걷기
-                  else if (RandomAction >= 80)
-                  {
-                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
-                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_left, RandomTime));
-                  }
-                  // 앞으로 걷기
-                  else
-                  {
-                      float RandomTime = UnityEngine.Random.Range(1.0f, 1.5f);
-                      st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_forward, RandomTime));
-                  }
-              }
-          }
-
+          ///... 코드 생략
+          
+          st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_right, RandomTime));
+          
+          ///...
+          
+          st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_left, RandomTime));
+          
+          ///...
+         
+          st_MoveAction.Push(new MoveAction(FanaticBattleType.Walk_forward, RandomTime));
+                  
           isMoving = true;
       }
   }
 ```
-
-## 2. Animator Blendtree 파라미터 업데이트
-애니메이터 Blendtree에 사용되는 Forward와 Right 파라미터에 현재 '움직임'에 따른 값을 할당합니다.
-
-![블렌드트리](https://user-images.githubusercontent.com/48229283/100952783-8338e100-3554-11eb-8dd7-29686e5f3477.PNG)
-
-```cs
-  // 무브 파라미터 업데이트
-  protected virtual void UpdateMoveValue()
-  {
-      // m_moveType에 따라 Animator에 넘기는 v와 h의 값을 변경
-      switch (m_moveType)
-      {
-          // 제자리
-          case MoveType.Stay:
-              v = Mathf.Lerp(v, 0, Time.deltaTime * 2);
-              h = Mathf.Lerp(h, 0, Time.deltaTime * 2);
-              break;
-          // 걷기
-          case MoveType.WalkForward:
-              v = Mathf.Lerp(v, BlendLowValue, Time.deltaTime * 2);
-              h = Mathf.Lerp(h, 0, Time.deltaTime * 2);
-              break;
-          // 달리기
-          case MoveType.RunForward:
-              v = Mathf.Lerp(v, BlendHighValue, Time.deltaTime * 2);
-              h = Mathf.Lerp(h, 0, Time.deltaTime * 2);
-              break;
-          // 전력질주
-          case MoveType.FastRun:
-              v = Mathf.Lerp(v, BlendHighValue + 0.5f, Time.deltaTime * 2);
-              h = Mathf.Lerp(h, 0, Time.deltaTime * 2);
-              break;
-          // 오른쪽으로 걷기
-          case MoveType.Right:
-              v = Mathf.Lerp(v, 0, Time.deltaTime * 2);
-              h = Mathf.Lerp(h, BlendLowValue, Time.deltaTime * 2);
-              break;
-          // 왼쪽으로 걷기
-          case MoveType.Left:
-              v = Mathf.Lerp(v, 0, Time.deltaTime * 2);
-              h = Mathf.Lerp(h, -BlendLowValue, Time.deltaTime * 2);
-              break;
-          case MoveType.ReSet:
-              v = 0;
-              h = 0;
-              break;
-      }
-      
-      // 애니메이터에 값 할당
-      m_Animator.SetFloat("Forward", v);
-      m_Animator.SetFloat("Right", h);
-  }
-```
   
-## 3. 기본 몬스터 부모 클래스
+### 몬스터 부모 클래스
 
-몬스터의 뼈대가 되는 클래스입니다.  
-기본적인 FSM작동 방식과 프로퍼티를 갖추고 있습니다.  
+* FSM 작동 프레임 제공
 
 ```cs
 public class BaseMonsterController : MonoBehaviour
 {
-    // Astar Grid
-    public Grid grid;
-    protected AStarCompleted Astar;
-    [HideInInspector] public Vector3 Search_Path;
-    [HideInInspector] public Vector3 Look_Path;
-
-    public Transform HitBox;
-    public Transform pivot;
-    public Transform pivotImg;
-    // 스크립트 컴포넌트
-    protected ViewAngle sc_ViewAngle; // 시야각 스크립트
-    public Health sc_Health;   // 체력
-    public MonsterSound sc_FanaticSound = null;
-    public MermanSound sc_MermanSound = null;
-
-    protected Animator m_Animator;
-
-    public MONSTER_STATE m_nowState;
-    [HideInInspector] public MONSTER_STATE m_prevState;
-    [HideInInspector] public BattleType m_battleType;
-    [HideInInspector] public MoveType m_moveType;
-
-    [Header("대기 상태 감지 거리")]
-    [Header("※타겟 감지에 사용될 거리들※")]
-    public float idleDetectDistance;
-    [Header("추적 상태 감지 거리")]
-    public float traceDetectDistance;
-
-    [Header("공격 사정 거리")]
-    public float AttackDistance;
-    [Header("전투 유지 거리")]
-    public float battleDistance;
-
-    [Header("타겟")]
-    public Transform Target = null;
-    public float TargetDistance;
-
-    LayerMask DetectLayer;
-    Collider[] DetectedObj;
-    float minDistanceTarget;
-
-    [Header("회전속도")]
-    public float extraRotationSpeed;
-
-    [Header("달리기 속도")]
-    public float RunSpeed;
-    [Header("걷기 속도")]
-    public float WalkSpeed;
-    [HideInInspector] public float OriginWalkSpeed; 
-
-    protected int m_prevHp;
-
-    [HideInInspector] public CharacterController CC;
-    public float gravity;
-
-    [Header("몬스터 등급")]
-    public MonsterLevel m_Level;
-
-    #region variables
-
-    [HideInInspector] public bool m_isEvade = false;
-    [HideInInspector] public bool m_TargetInBattleZone; // 타겟 트리거 인 플래그
-    [HideInInspector] public bool m_isAttack = false;
-    [HideInInspector] public bool m_canHit = false;
-    [HideInInspector] public bool LockRotation = false;   // 회전 잠금
-    [HideInInspector] public bool m_isAttackDelay = false;
-    [HideInInspector] public bool OnHitFlag = false;
-    [HideInInspector] public bool OnHitOnce = false;
-    [HideInInspector] public bool DeathOnce = false;
-    [HideInInspector] public bool isMoving = false;
-    [HideInInspector] public float MoveTime = 0;
-    [HideInInspector] public float AttackDelayTime = 0;
-    [HideInInspector] public float EndHitDelayTime = 0;
-    [HideInInspector] public float RandomActionTime = 0;
-    [HideInInspector] public float prevTime = 0;
-    [Header("피격 딜레이 시간")]public float HitDelayTime;
-    [HideInInspector] public float currentDamageValue = 0;
-    [HideInInspector] public int currentAttackType = 0;     // 공격 타입 (약공격, 강공격)
-    [HideInInspector] public int currentOnHitType = 0;      // 피격당했을때, 약, 강인지 판별
-    [HideInInspector] public float startMoveTime = 0;
-    [HideInInspector] public int m_Player_aggroValue = 0;        // 어그로 수치
-    [HideInInspector] public int m_Other_aggroValue = 0;
-    // 전투 타입
-    [HideInInspector]
-    public FanaticBattleType m_FanaticBattleType;
-
-    #endregion
-
-    [HideInInspector] public float v = 0;    // Vertical;
-    [HideInInspector] public float h = 0;    // Horizontal;
-
-    protected float BlendLowValue = 0.5f;
-    protected float BlendHighValue = 1.0f;
-
-    // 스폰한 지점
-    Vector3 spawnPosition;
-    protected Vector3 lookrotation;
-    [HideInInspector] public Vector3 OriginPosition;
-
-    // TCP 통신 관련
-    [HideInInspector] public int FrameCheck;
-    [HideInInspector] public int Animation_FrameCheck;
-    [HideInInspector] public int Animation_FrameDelay = 0;
-    [HideInInspector] public int SetTarget_FrameCheck;
-    [HideInInspector] public int ChangeState_FrameCheck;
-    [HideInInspector] public int index;
-    [HideInInspector] public Vector3 m_desiredPosition;
-    [HideInInspector] public Quaternion m_desiredRotation;
-    [HideInInspector] public Quaternion SendRotation;
-    [HideInInspector] public MoveType m_desiredMoveType;
-    [HideInInspector] public float m_desiredV;
-    [HideInInspector] public float m_desiredH;
-    [HideInInspector] public float m_desiredSpeed = 0;
-    [HideInInspector] public bool TCP_isConnected;      // 서버 연결 여부
-    [HideInInspector] public bool TCP_setAnimation = false;
-    [HideInInspector] public bool m_isMovementAction = false;
-    [HideInInspector] public float recv_v = 0;
-    [HideInInspector] public float recv_h = 0;
-
-    [HideInInspector] public Vector3 pathPos = Vector3.zero;
-    [HideInInspector] public float distance;
-    [HideInInspector] public Vector3 direction;
-    [HideInInspector] public Vector3 m_desiredMoveDirection;
-
-    // 애니메이션 이동 관련
-    [HideInInspector] public bool AttackTranlsate = false;
-    [HideInInspector] public bool OnHitTranlsate = false;
-    [HideInInspector] public bool EvadeTranslate = false;
-    [HideInInspector] public float AnimTranslateSpeed = 0;
-    [HideInInspector] public EvadeType m_evadeType;
-
-    protected virtual void Awake()
-    {
-        spawnPosition = transform.position;
-        m_nowState = MONSTER_STATE.IDLE;
-        m_moveType = MoveType.Stay;
-        m_Animator = GetComponentInChildren<Animator>();
-        DetectLayer = 1 << LayerMask.NameToLayer("Player");
-        StartCoroutine(ChangeState());
-
-        sc_ViewAngle = GetComponent<ViewAngle>();
-        sc_Health = GetComponent<Health>();
-
-        m_prevHp = sc_Health.curHP;
-
-        grid = GetComponent<Grid>();
-        Astar = GetComponent<AStarCompleted>();
-
-        CC = GetComponent<CharacterController>();
-
-        OriginPosition = transform.position;
-        OriginWalkSpeed = WalkSpeed;
-        FrameCheck = 5;
-        Animation_FrameCheck = -1;
-        ChangeState_FrameCheck = -1;
-        TCP_isConnected = false;
-        SendRotation = transform.rotation;
-    }
-
-    protected virtual void Update()
-    {
-        UpdateRotateSpeed();
-    }
-
-    public void CreateRandomActionTime(float min, float max)
-    {
-        prevTime = Time.time;
-        RandomActionTime = UnityEngine.Random.Range(min, max);
-    }
-
-    // 회전속도 조정
-    protected virtual void UpdateRotateSpeed()
-    {
-        if (Target != null)
-        {
-            Vector3 lookrotation = Look_Path - transform.position;
-            lookrotation.y = 0;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(lookrotation), extraRotationSpeed * Time.deltaTime);
-        }
-    }
-
-    // 가장 가까운 타겟 검출하기
-    protected void DetectEnemy(float DetectDistance)
-    {
-        DetectedObj = Physics.OverlapSphere(this.transform.position, DetectDistance, DetectLayer);
-
-        if (DetectedObj.Length != 0)
-        {
-            //print(DetectedObj[0].gameObject.name);
-            minDistanceTarget = Vector3.Distance(transform.position, DetectedObj[0].transform.position);
-
-            Transform _target = null;
-            for (int i = 0; i < DetectedObj.Length; i++)
-            {
-                float distance = Vector3.Distance(transform.position, DetectedObj[i].transform.position);
-                if (distance <= minDistanceTarget)
-                {
-                    minDistanceTarget = distance;
-                    _target = DetectedObj[i].transform;
-                }
-            }
-
-            Target = _target;
-        }
-    }
-        
-    // 무브 파라미터 업데이트
-    protected virtual void UpdateMoveValue()
-    {
-        switch (m_moveType)
-        {
-            case MoveType.Stay:
-                v = Mathf.Lerp(v, 0, Time.deltaTime * 2);
-                h = Mathf.Lerp(h, 0, Time.deltaTime * 2);
-                break;
-            case MoveType.WalkForward:
-                v = Mathf.Lerp(v, BlendLowValue, Time.deltaTime * 2);
-                h = Mathf.Lerp(h, 0, Time.deltaTime * 2);
-                break;
-            case MoveType.RunForward:
-                v = Mathf.Lerp(v, BlendHighValue, Time.deltaTime * 2);
-                h = Mathf.Lerp(h, 0, Time.deltaTime * 2);
-                break;
-            case MoveType.FastRun:
-                v = Mathf.Lerp(v, BlendHighValue+0.5f, Time.deltaTime * 2);
-                h = Mathf.Lerp(h, 0, Time.deltaTime * 2);
-                break;
-            case MoveType.Right:
-                v = Mathf.Lerp(v, 0, Time.deltaTime * 2);
-                h = Mathf.Lerp(h, BlendLowValue, Time.deltaTime * 2);
-                break;
-            case MoveType.Left:
-                v = Mathf.Lerp(v, 0, Time.deltaTime * 2);
-                h = Mathf.Lerp(h, -BlendLowValue, Time.deltaTime * 2);
-                break;
-            case MoveType.ReSet:
-                v = 0;
-                h = 0;
-                break;
-        }
-
-        m_Animator.SetFloat("Forward", v);
-        m_Animator.SetFloat("Right", h);
-    }
+    ///...
 
     // 대기 상태
-    protected virtual void Idle_state()
-    {
-    }
+    protected virtual void Idle_state() { //자식에서 재정의 }
 
     // 추적 상태
-    protected virtual void Trace_state()
-    {
-    }
-
-    // 공격 거리 감지하기
-    // 사정거리안에 들어오면 공격 실행
-    protected virtual void CheckAttackDistance()
-    {
-    }
+    protected virtual void Trace_state() {}
 
     // 전투 상태
-    protected virtual void Battle_state()
-    {
-    }
+    protected virtual void Battle_state() {}
 
     // 도주 상태
-    protected virtual void Runaway_state()
-    {
-    }
+    protected virtual void Runaway_state() {}
 
     // 피격 상태
-    protected virtual void OnHit_state()
-    {
-
-    }
+    protected virtual void OnHit_state() {}
 
     // 죽음 상태
-    protected virtual void Death_state()
-    {
-
-    }
+    protected virtual void Death_state() {}
 
     // 상태 변경 코루틴
-    protected virtual IEnumerator ChangeState()
-    {
-        while (true)
-        {
-            switch (m_nowState)
-            {
-                case MONSTER_STATE.ONHIT:
-                    OnHit_state();
-                    break;
-                case MONSTER_STATE.DEATH:
-                    Death_state();
-                    yield break;        // 죽은 경우 코루틴 종료
-                case MONSTER_STATE.IDLE:
-                    Idle_state();
-                    break;
-                case MONSTER_STATE.TRACE:
-                    Trace_state();
-                    break;
-                case MONSTER_STATE.BATTLE:
-                    Battle_state();
-                    break;
-            }
-
-            yield return null;
-        }
-    }
-
-    // A* 길 탐색
-    public bool SearchPath()
-    {
-        try
-        {
-            var n = grid.path[0];
-            Look_Path = n.worldPosition;
-
-            n = grid.path[1];
-            Search_Path = n.worldPosition;
-
-            return true;
-        }
-        catch (Exception e)
-        {
-            print(e);
-            return false;
-        }
-    }
+    protected virtual IEnumerator ChangeState() {}
+    
+    ///...
 }
 ```
 
-# TCP 클라이언트
-클라이언트에서 서버에게 패킷을 보내고, 서버로부터 받은 패킷을 처리하여 동기화하는 부분을 작업하였습니다.
+## TCP 클라이언트
   
-![서버](https://user-images.githubusercontent.com/48229283/101117733-0462a780-362b-11eb-887e-53df0792a2cc.PNG)  
-하나의 클라이언트가 연산을 먼저 처리한 후에 서버에게 보내고, 서버는 다시 클라이언트 모두에게 패킷을 보냅니다.  
+* 클라이언트 -> 서버 패킷 보내기
+* 서버 -> 클라이언트 받은 패킷 처리, 동기화 부분 작업
+  
+## 패킷 처리
+  
+![서버](https://user-images.githubusercontent.com/48229283/101117733-0462a780-362b-11eb-887e-53df0792a2cc.PNG)
+  
+* 클라이언트1 연산 -> 서버
+* 서버 -> 클라이언트(1,2) (동기화)
+* 클라이언트(1,2) 로직 실행
+  
+* 하나의 클라이언트가 연산을 먼저 처리한 후에 서버에게 보내고, 서버는 다시 클라이언트 모두에게 패킷을 보냅니다.  
 클라이언트는 패킷을 받고나서 로직을 실행합니다.
   
 ## 1. 몬스터 이동 동기화
